@@ -43,10 +43,15 @@ $ pip install -r requirements.txt
 $ python main.py
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
-
 
 ## Screanshots
+
+- Wordcloud poster
+
+![2017-12_wordcloud](https://user-images.githubusercontent.com/12940079/34080025-a5f5afde-e340-11e7-9c2f-60bc0c1faa79.png)
+
+
+- Number of Google queries over months
 
 ![stats1](https://user-images.githubusercontent.com/12940079/34079835-3c72f03c-e33e-11e7-9415-43b86113425b.png)
 
