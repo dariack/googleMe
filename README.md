@@ -44,9 +44,9 @@ $ python main.py
 ```
 
 
-## Screanshots
+## Screenshots
 
-- Wordcloud poster
+- Word Cloud Poster
 
 ![2017-12_wordcloud](https://user-images.githubusercontent.com/12940079/34080025-a5f5afde-e340-11e7-9c2f-60bc0c1faa79.png)
 
