@@ -2,7 +2,7 @@
 
 Rediscover your past months and years using Google search data.
 Google allows users to download their Google data, including their search history.
-The program analyzes the data and creates a personalized word-cloud poster, which brings back your thoughts, fears and dreams from that pediod.
+The program analyzes the data and creates a personalized word-cloud poster, which brings back your thoughts, fears and dreams from that period.
 
 ## Getting Started
 
@@ -28,7 +28,7 @@ $ sudo easy_install3 pip
 
 ![screenshot22](https://user-images.githubusercontent.com/12940079/34079718-a91081a8-e33b-11e7-9db1-049df3c483c2.png)
 
-- ***Clarification:** Your data, which obviously is very private, will not be used or transferred to any other machine but your own computer. The use of the data is merely local, and nobody will have access to it but you.*
+- ***Clarification:** Your data, which obviously is very private, will not be used or transferred to any other machine during the program run. The use of the data is merely local, and nobody will have access to it but you. In other words - your private data will remain private.*
 
 4. Unzip the downloaded data.
 
