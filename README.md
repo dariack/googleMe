@@ -50,6 +50,8 @@ $ python main.py
 
 ![2017-12_wordcloud](https://user-images.githubusercontent.com/12940079/34080025-a5f5afde-e340-11e7-9c2f-60bc0c1faa79.png)
 
+![2016-08_wordcloud](https://user-images.githubusercontent.com/12940079/34157576-e2013cf6-e4ca-11e7-8e0c-2fe852c72108.png)
+
 
 - Number of Google queries over months
 
