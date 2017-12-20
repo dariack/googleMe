@@ -37,29 +37,6 @@ nltk.download('stopwords')
 
 # -*- coding: utf-8 -*-
 
-"""
-things to install:
-$ conda install -c anaconda nltk 
-$ conda install -c anaconda numpy 
-$ pip install altair
-$ pip install --upgrade notebook
-$ pip install image
------- install wordcloud:
-https://github.com/amueller/word_cloud
-pip install wordcloud
-pip install -U nltk
-pip install --upgrade easygui
-
-pip install langdetect
-
-python3 -c "exec(\"import nltk\nnltk.download('stopwords')\")"
-
-
-sudo apt-get install python3-dev
-sudo apt-get install python3-setuptools
-sudo pip install setuptools --upgrade
-
-"""
 
 
 
@@ -214,6 +191,7 @@ def parse_json(path):
         elif "Takeout" in os.listdir(this_dir):
             curr_path = this_dir + "/Takeout/Searches"
         else:
+            print("!! Error - please make sure the path you chose ends with the folder 'Takeout'") 
             raise Exception
 
     month_statistics = {}       # number of searches per month
