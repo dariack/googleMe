@@ -57,6 +57,14 @@ $ python main.py
 
 ![stats1](https://user-images.githubusercontent.com/12940079/34079835-3c72f03c-e33e-11e7-9415-43b86113425b.png)
 
+- Hebrew vs. English
+
+![heb_eng](https://user-images.githubusercontent.com/12940079/34254999-43635a8c-e657-11e7-959f-6cd33c519f19.png)
+
+- Gui
+
+![gui](https://user-images.githubusercontent.com/12940079/34254963-245b91cc-e657-11e7-973d-0b04f072b387.png)
+
 
 ## Author
 
