@@ -52,6 +52,12 @@ $ python main.py
 
 ![2016-08_wordcloud](https://user-images.githubusercontent.com/12940079/34157576-e2013cf6-e4ca-11e7-8e0c-2fe852c72108.png)
 
+- Word Trends
+
+![watch online_trend](https://user-images.githubusercontent.com/12940079/34361162-6ed223c0-ea70-11e7-9efe-b28214bbf1e7.png)
+
+![python_trend](https://user-images.githubusercontent.com/12940079/34361183-97598a86-ea70-11e7-959a-ca821af4103b.png)
+
 
 - Number of Google queries over months
 
