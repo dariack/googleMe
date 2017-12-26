@@ -1160,7 +1160,7 @@ def gui_filter_words(title):
 def gui_word_trend(title):
     ans = gui.textbox(msg="--Trends--\n\n\nCheck out the number of searches of a given word or phrase (up to a 2 words phrase)",title=title,
                       text="",
-                      codebox=False, callback=None, run=True, height_ = 100)
+                      codebox=False, callback=None, run=True)
     return ans
 
 
