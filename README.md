@@ -69,7 +69,7 @@ $ python main.py
 
 - Gui
 
-![gui](https://user-images.githubusercontent.com/12940079/34254963-245b91cc-e657-11e7-973d-0b04f072b387.png)
+![image](https://user-images.githubusercontent.com/12940079/34361295-699cdc50-ea71-11e7-967e-36891db58e86.png)
 
 
 ## Author
