@@ -3,8 +3,8 @@ import random
 import easygui as gui
 import sys
 
-# import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+from operator import itemgetter, attrgetter
 
 import matplotlib
 matplotlib.use("TkAgg")
@@ -32,6 +32,15 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from langdetect import detect
 from nltk import ngrams
 import nltk
+
+import pprint
+from nltk.stem.lancaster import LancasterStemmer
+
+# from __future__ import division
+# from sklearn.cluster import KMeans
+# from numbers import Number
+# from pandas import DataFrame
+# import sys, codecs, numpy
 
 nltk.download('stopwords')
 
@@ -782,6 +791,237 @@ def create_wordcloud_for_all_months(filter_lst):
         else:
             continue
 
+def check_if_word_in_cluster(word):
+
+    # print("word to cluster" + word)
+    f = open("glove_clusters_30000_words.json", 'r')
+    data = json.load(f)
+
+    for cluster in data.values():
+        if word in cluster:
+            return cluster
+
+    return []
+
+def run_trends(word, stemming = True):
+
+    word = word.lower()
+    print("word is: " + word + "\nstemming status is: " + str(stemming))
+
+    st = LancasterStemmer()
+
+    if get_trend(word, stemming) == False:
+        return False # no qureies
+
+    cluster = check_if_word_in_cluster(word)
+
+    # try stemming if not found in cluster in regular form
+    if (cluster) == 0:
+        cluster = check_if_word_in_cluster(st.stem(word))
+
+    if len(cluster) == 0:
+        print("empty cluster for: " + word)
+    else:
+        pprint.pprint(cluster)
+
+def get_phrase_appearance(word, stemming):
+    st = LancasterStemmer()
+    orig_phrases = set()
+    dict = {}
+    stopWords = set(stopwords.words('english'))
+    for fn in os.listdir('./pickle_dump'):
+        if (not fn.startswith('queries')) or (not fn.endswith(".classic.pickle")):
+            continue
+
+        data = pickle.load(open("pickle_dump/" + fn, 'rb'))
+
+        for q in data:
+            mytime = datetime.datetime.strptime(q["query_time"], "%Y-%m-%d %H:%M:%S")
+            text = q["query_text"].lower().split()
+
+            year = mytime.isocalendar()[0]
+            month = mytime.month
+            week = (mytime.isocalendar()[1] // month)
+
+            if stemming:
+                stem_text = [st.stem(x) for x in text]
+
+                if len(word.split()) == 1:
+
+                    # stemming word and text
+                    word = st.stem(word)
+                    # print("after stemming:" + str(word))
+
+                    if word in stem_text:
+
+                        # add original phrase to the set for later:
+                        orig_phrases.add(text[stem_text.index(word)])
+                        if text[stem_text.index(word)] not in orig_phrases:
+                            print("added "+ str(text[stem_text.index(word)]) + " to set")
+
+                        dict[year] = dict.get(year,{})
+                        dict[year][month] = dict[year].get(month, {})
+                        dict[year][month][week] = dict[year][month].get(week,0) + 1
+
+                elif len(word.split()) == 2:
+
+                    # stemming word and text
+                    word1 = st.stem(word.split()[0])
+                    word2 = st.stem(word.split()[1])
+                    # print("after stemming:" + str(word1) + " " + str(word2))
+
+                    if word1 in stem_text and word2 in stem_text:
+                        # add original phrase to the set for later:
+                        orig_phrases.add(text[stem_text.index(word1)])
+                        orig_phrases.add(text[stem_text.index(word2)])
+
+                        if text[stem_text.index(word1)] not in orig_phrases:
+                            print("added " + str(text[stem_text.index(word1)]) + " to set")
+                        if text[stem_text.index(word2)] not in orig_phrases:
+                            print("added " + str(text[stem_text.index(word2)]) + " to set")
+
+                        dict[year] = dict.get(year, {})
+                        dict[year][month] = dict[year].get(month, {})
+                        dict[year][month][week] = dict[year][month].get(week, 0) + 1
+
+                else:
+                    print("Error! please insert up to a 2 words phrase")
+                    raise Exception
+
+
+            else: # no stemming
+
+                if len(word.split()) == 1:
+
+                    if word in text:
+
+                        dict[year] = dict.get(year, {})
+                        dict[year][month] = dict[year].get(month, {})
+                        dict[year][month][week] = dict[year][month].get(week, 0) + 1
+
+
+                elif len(word.split()) == 2:
+
+                    # stemming word and text
+                    word1 = st.stem(word.split()[0])
+                    word2 = st.stem(word.split()[1])
+                    # print("after stemming:" + str(word1) + " " + str(word2))
+
+                    if word1 in stem_text and word2 in stem_text:
+                        # add original phrase to the set for later:
+                        orig_phrases.add(text[stem_text.index(word1)])
+                        orig_phrases.add(text[stem_text.index(word2)])
+
+                        if text[stem_text.index(word1)] not in orig_phrases:
+                            print("added "+ str(text[stem_text.index(word1)]) + " to set")
+                        if text[stem_text.index(word2)] not in orig_phrases:
+                            print("added "+ str(text[stem_text.index(word2)]) + " to set")
+
+                        dict[year] = dict.get(year,{})
+                        dict[year][month] = dict[year].get(month, {})
+                        dict[year][month][week] = dict[year][month].get(week,0) + 1
+
+                else:
+                    print("Error! please insert up to a 2 words phrase")
+                    raise Exception
+
+    return dict, orig_phrases
+
+def get_trend(word, stemming):
+
+    dict, orig_phrases = get_phrase_appearance(word, stemming)
+
+    if len(dict) == 0:
+        print("No queries found for the phrase: " + str(word))
+        return False
+
+    first_year = list(dict.keys())[0]
+    last_year = list(dict.keys())[-1]
+
+    for year in range(first_year,last_year+1):
+        if year not in dict.keys():
+            dict[year] = {1:{},2:{},3:{},4:{},5:{},6:{},7:{},8:{},9:{},10:{},11:{},12:{}}   # empty year
+        for i in range(1,13):
+            if i not in dict[year].keys():
+                dict[year][i] = {1:0,2:0,3:0,4:0}
+            for week in range(1,5):
+                if week not in dict[year][i].keys():
+                    dict[year][i][week] = 0
+
+    dict_sorted = sorted(dict.items())
+    # pprint.pprint(dict_sorted)
+
+    # dict to plot
+    mydict = {}
+
+
+    for year in dict_sorted:
+        str_year = year[0]
+        for mon in year[1].keys():
+            week = year[1][mon]
+            for w in week.keys():
+                mydict[(str_year, mon, w)] = week[w]
+
+    dict_sorted = sorted(mydict.items(), key=itemgetter(0,1))
+    xlables = [str(x[0]) for x in dict_sorted]
+    yvals = [x[1] for x in dict_sorted]
+
+    m = max(yvals)
+
+    for i in range(len(yvals)):
+        if yvals[i] != 0:
+            currlable = str(xlables[i][1:-1]).split(",")
+            currlable = str(currlable[0:2]).replace("[", "")
+            currlable = str(currlable).replace("]", "")
+            currlable = str(currlable).replace("'", "")
+            plt.text(x=i, y=yvals[i] + 0.12*m, s=currlable, size=6,verticalalignment='top', horizontalalignment='left', rotation=70)
+
+    plt.bar(range(len(yvals)), yvals , align='center', color='grey')
+
+    ax = plt.axes()
+    ax.get_xaxis().set_visible(False)
+    ax.set_ylim([0, 130*m/100])
+    ax.yaxis.grid(linestyle='dotted')  # horizontal lines
+
+
+    plt.ylabel('Number Of Queries (per week)')
+    plt.xlabel('Time (year, week)')
+
+    if is_hebrew(word):
+        #reverse the words fot the plot:
+        word = word[::-1]
+
+    plt.title("Trend of '"+word+"' in Google Queries Over Weeks")
+
+    if len(orig_phrases) != 0:
+        all_phrases = ""
+        for x in orig_phrases:
+            if is_hebrew(word):
+                x = x[::-1]
+            all_phrases += ", " + x
+        all_phrases = all_phrases[2:]
+        plt.figtext(0.02, .95, 'Phrases included in the analysis:\n' + all_phrases, fontsize=9, ha='left', color="green")
+
+    figure = plt.gcf()  # get current figure
+    figure.set_size_inches(13, 7)
+    figure.subplots_adjust(bottom=0.1, left=0.08)
+
+    if not os.path.exists("figs/"):
+        os.makedirs("figs/")
+
+    # clean word before saving, to use in file name
+    word = word.replace("\"","")
+    word = word.replace("\'","")
+    word = word.replace(".","")
+    word = word.replace(",","")
+    word = word.replace(":","")
+    word = word.replace(";","")
+
+    plt.savefig("figs/"+word+"_trend.png", dpi=300)
+
+    plt.show()
+
+
 def gui_welcome(title):
     # Window #1 - welcome
 
@@ -804,7 +1044,8 @@ def gui_ask_to_init(title):
 
 def gui_find_path(title):
     ret_val = gui.msgbox(
-        "--Find Data's Path--\n\n\nTo get started, let's find the directory in which your google data is waiting",
+        "--Find Data's Path--\n\n\nTo get started, let's find the directory in which your google data is waiting\n"
+        "Attention! The path needs to end with the 'Takeout' folder",
         title=title, ok_button="Let's!", image=None)
     if ret_val is None:  # User closed msgbox
         sys.exit(0)
@@ -858,7 +1099,7 @@ def gui_choose_action(title):
 
     msg = "--GoogleMe!--\n\n\nWhat would you like to check out?"
 
-    choices = ["Data Poster", "Cross Months Statistics", "Hebrew vs. English Statistics"]
+    choices = ["Data Poster", "Cross Months Statistics", "Hebrew vs. English Statistics", "Word Trend"]
     choice = gui.choicebox(msg, title, choices)
 
     if choice is None:  # User closed msgbox
@@ -915,6 +1156,13 @@ def gui_filter_words(title):
                       text="<word1>, <word2>, <word3>, ...",
                       codebox=False, callback=None, run=True)
     return ans
+
+def gui_word_trend(title):
+    ans = gui.textbox(msg="--Trends--\n\n\nCheck out the number of searches of a given word or phrase (up to a 2 words phrase)",title=title,
+                      text="",
+                      codebox=False, callback=None, run=True, height_ = 100)
+    return ans
+
 
 def init_program(title):
     try:
@@ -975,6 +1223,7 @@ def main_loop(title):
     poster = choices[0]
     all_time_stats = choices[1]
     heb_eng_stats = choices[2]
+    trend = choices[3]
 
     if ans == poster:
 
@@ -1050,8 +1299,18 @@ def main_loop(title):
                 gui_error_hebrew_vs_english(title)
                 continue
 
+    elif ans == trend:
+        phrase = gui_word_trend(title)
+        run_trends(phrase)
+
 
 def main():
+    '''
+    # get_trend("running")
+    run_trends('ת"א')
+
+    '''
+
     global path
     # path = "/home/daria/Documents/private/seminar"
     title = "GoogleMe"
@@ -1072,6 +1331,7 @@ def main():
         check_program_was_init(title)
     while True:
         main_loop(title)
+
 
 
 main()
