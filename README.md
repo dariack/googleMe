@@ -61,7 +61,7 @@ $ python main.py
 
 - Number of Google queries over months
 
-![stats1](https://user-images.githubusercontent.com/12940079/34079835-3c72f03c-e33e-11e7-9415-43b86113425b.png)
+![image](https://user-images.githubusercontent.com/12940079/34380621-8da50d9e-eb0b-11e7-9365-25a0210c1f68.png)
 
 - Hebrew vs. English
 
