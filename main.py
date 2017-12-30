@@ -508,13 +508,6 @@ def get_filter_words(words_to_filter=[]):
 
     filter_words_lst = set(stopwords.words('english'))
 
-    # to save the embarrassment...
-    # filter_words_lst.add("סקס")
-    # filter_words_lst.add("פורנו")
-    # filter_words_lst.add("sex")
-    # filter_words_lst.add("porn")
-    # filter_words_lst.add("fuck")
-
     for word in words_to_filter:
         print("# add " + word + " to filter")
         filter_words_lst.add(word)
@@ -791,18 +784,6 @@ def create_wordcloud_for_all_months(filter_lst):
         else:
             continue
 
-def check_if_word_in_cluster(word):
-
-    # print("word to cluster" + word)
-    f = open("glove_clusters_30000_words.json", 'r')
-    data = json.load(f)
-
-    for cluster in data.values():
-        if word in cluster:
-            return cluster
-
-    return []
-
 def run_trends(word, stemming = True):
 
     word = word.lower()
@@ -813,16 +794,6 @@ def run_trends(word, stemming = True):
     if get_trend(word, stemming) == False:
         return False # no qureies
 
-    cluster = check_if_word_in_cluster(word)
-
-    # try stemming if not found in cluster in regular form
-    if (cluster) == 0:
-        cluster = check_if_word_in_cluster(st.stem(word))
-
-    if len(cluster) == 0:
-        print("empty cluster for: " + word)
-    else:
-        pprint.pprint(cluster)
 
 def get_phrase_appearance(word, stemming):
     st = LancasterStemmer()
@@ -1147,6 +1118,15 @@ def gui_error_hebrew_vs_english(title):
     if ret_val is None:  # User closed msgbox
         sys.exit(0)
 
+def gui_error_trend(title):
+
+    ret_val = gui.msgbox("Oh no!\n\n\nIt seems there are no queries for the phrase you entered\n\n"
+                         "Why don't you try a different one?\n",
+                         title=title, ok_button="Sure", image=None)
+    if ret_val is None:  # User closed msgbox
+        sys.exit(0)
+
+
 def gui_filter_words(title):
     ans = gui.textbox(msg="--Filter Out Words?--\n\n\nThe poster will display google searches you have made in the past."
                           "\nInsert words you would like to filter out from the poster (or leave empty)\n\n"
@@ -1301,7 +1281,10 @@ def main_loop(title):
 
     elif ans == trend:
         phrase = gui_word_trend(title)
-        run_trends(phrase)
+        ret = run_trends(phrase)
+        if ret == False:
+            gui_error_trend(title)
+
 
 
 def main():
